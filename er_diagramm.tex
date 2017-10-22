@@ -1,0 +1,78 @@
+\documentclass[a4paper,12pt,landscape]{article}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+
+\usepackage[landscape]{geometry}
+\usepackage{graphicx}
+
+\usepackage{tikz-er2}
+\begin{document}
+
+%\thispagestyle{empty}
+
+\usetikzlibrary{positioning}
+\usetikzlibrary{shadows}
+
+\tikzstyle{every entity} = [top color=white, bottom color=blue!30, 
+                            draw=blue!50!black!100, drop shadow]
+\tikzstyle{every weak entity} = [drop shadow={shadow xshift=.7ex, 
+                                 shadow yshift=-.7ex}]
+\tikzstyle{every attribute} = [top color=white, bottom color=yellow!20, 
+                               draw=yellow, node distance=1cm, drop shadow]
+\tikzstyle{every relationship} = [top color=white, bottom color=red!20, 
+                                  draw=red!50!black!100, drop shadow]
+\tikzstyle{every isa} = [top color=white, bottom color=green!20, 
+                         draw=green!50!black!100, drop shadow]
+
+\centering
+%\scalebox{.87}{
+\begin{tikzpicture}[node distance=1.5cm, every edge/.style={link}]
+  
+  \node[entity] (user) {Benutzer};
+  \node[attribute] (addr) [above right=of user] {Adresse} edge (user);
+  \node[attribute] (hnr) [above left=of addr] {HNummer} edge (addr);
+  \node[attribute] (str) [above right=of addr] {Strasse} edge (addr);
+  \node[attribute] (plz) [below right=of addr] {PLZ} edge (addr);
+  \node[attribute] (ort) [right=of addr] {Ort} edge (addr);
+  \node[attribute] (land) [below=of addr] {Land} edge (addr);
+  \node[attribute] (mail) [below right=of user] {E-Mail} edge (user);
+  \node[attribute] (login) [left=of user] {LogIn} edge (user);
+  \node[attribute] (uname) [left=of login] {Benutzername} edge (login);
+  \node[attribute] (pw) [below left=of login] {Passwort} edge (login);
+  \node[attribute] (name) [above left=of user] {Name} edge (user);
+  \node[attribute] (vname) [above left=of name] {Vorname} edge (name);
+  \node[attribute] (nname) [left=of name] {Nachname} edge (name);
+  \node[attribute] (b_id) [below left=of user] {\key{B\_ID}} edge (user);
+  
+  \node[isa] (isa) [below=2cm of user] {ISA} edge [total] node[right] {disjunkt} (user); 
+  \node[entity] (invest) [below left=1cm of isa] {Investor} edge (isa);
+  \node[multi attribute] (i_id) [below=of invest] {\discriminator{I\_ID}} edge (invest);
+  \node[entity] (dachb) [below right=1cm of isa] {Dachbesitzer} edge (isa);
+  \node[multi attribute] (d_id) [below=of dachb] {\discriminator{D\_ID}} edge (dachb);
+
+  \node[ident relationship] (macht) [left=of invest] {macht} edge node[above] {1} (invest);
+  \node[ident relationship] (has) [right=of dachb] {besitzt} edge node[above] {1} (dachb);
+
+  \node[weak entity] (inv) [below =3cm of macht] {Investition} edge [total] node[right] {n}(macht);
+  \node[attribute] (sum) [below right=of inv] {Summe} edge (inv);
+  \node[attribute] (i_id) [above left=of inv] {\key{I\_ID}} edge (inv);
+  \node[attribute] (b_id) [left=of inv] {\discriminator{B\_ID}} edge (inv);
+  \node[multi attribute] (d_id) [below left=of inv] {\discriminator{D\_ID}} edge (inv);
+  \node[attribute] (flaeche) [below=of inv] {Fl"ache} edge (inv);
+
+  \node[weak entity] (dach) [below=3cm of has]{Dach} edge [total] node[left] {n} (has);
+  \node[attribute] (standort) [below=of dach] {Standort} edge (dach);
+  \node[attribute] (länge) [below=of standort] {L"angengrad} edge (standort);
+  \node[attribute] (breite) [below right=of standort] {Breitengrad} edge (standort);
+  \node[multi attribute] (i_id) [below right=of dach] {\discriminator{I\_ID}} edge (dach);
+  \node[attribute] (b_id) [right=of dach] {\discriminator{B\_ID}} edge (dach);
+  \node[attribute] (d_id) [above right=of dach] {\key{D\_ID}} edge (dach);
+  \node[attribute] (zustand) [below left=of dach] {Zustand} edge (dach);
+  
+  \node[relationship] (invest) [right=3.75cm of inv] {\"{}mietet\"{}} edge node[above] {n} (dach);
+  \node[relationship] (invest) [left=3.75cm of dach] {\"{}mietet\"{}} edge node[above] {m}(inv);
+
+\end{tikzpicture}
+%}
+
+\end{document}
