@@ -1,0 +1,17 @@
+com/example/controller/LoginController.class
+com/example/controller/SocialMediaController.class
+com/example/service/RoofService.class
+com/example/model/Roof.class
+com/example/configuration/WebMvcConfig.class
+META-INF/spring-configuration-metadata.json
+com/example/configuration/SecurityConfiguration.class
+com/example/repository/UserRepository.class
+com/example/DemoApplication.class
+com/example/service/RoofServiceImpl.class
+com/example/service/UserService.class
+com/example/controller/RoofController.class
+com/example/service/UserServiceImpl.class
+com/example/model/User.class
+com/example/repository/RoofRepository.class
+com/example/model/Role.class
+com/example/repository/RoleRepository.class
