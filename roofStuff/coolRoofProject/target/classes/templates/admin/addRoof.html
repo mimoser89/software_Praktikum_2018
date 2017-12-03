@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Add Roof - CoolRoofs</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+
+
+<body>
+
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="pull-left navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+        <a class="navbar-brand" href="#">CoolRoofs</a>
+      </div>
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="#">My Roof</a></li>
+          <li><a href="#">other 1</a></li>
+          <li><a href="#">other ...</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+  <div class="container">
+    <h2>Add new Roof</h2>
+    <form action="#" th:action="@{/admin/addRoof}" th:object="${roof}" method="post" class="form-horizontal">
+      <div class="form-group row">
+
+        <div class="col-xs-8 col-md-5">
+          <label for="address"> Adresse eingeben </label>
+          <input type="text" th:field="*{address}" placeholder "Address" class="form-control" id="address">
+
+        </div>
+      </div>
+
+      <div class="container">
+        <h1>Google map</h1>
+      </div>
+
+
+
+
+
+
+
+      <h2>Roof Details</h2>
+
+      <div class="form-group row">
+        <div class="col-xs-5 col-md-2">
+          <label for="age"> Age of Roof </label>
+          <select class="form-control" id="age" th:field="*{age}">
+
+            <div>
+              <option disabled="true" selected="selected" value="">Select</option>
+              <option value="0">0-5 years</option>
+              <option value="5">5-10 years</option>
+              <option value="10">10-15 years</option>
+              <option value="15">15-20 years</option>
+              <option value="20">20+ years</option>
+            </div>
+        </select>
+        </div>
+        <!--
+        <div>
+          <label>Angle</label>
+        </div>
+        <div class="form-group col-md-2" data-toggle="buttons">
+
+          <input type="radio" name="options" value="1" id="flat" th:field="*{angle}">
+          <label for="flat"> flat </label>
+
+          <input type="radio" name="options" value="2" id="angled" th:field="*{angle}">
+          <label for="angled"> angled </label>
+        </div>
+        -->
+      </div>
+      <div class="form-group row">
+        <div class="col-xs-5 col-md-2">
+          <label for="area"> Area </label>
+          <input type="number" th:field="*{area}" placeholder "area" class="form-control" id="area">
+        </div>
+        <div class="col-xs-7 col-md-5">
+          <label for="material"> Material </label>
+        <!--
+          <label for="material"> Material </label>
+          <input type="text" th:field="*{material}" placeholder "material" class="form-control" id="material">
+        -->
+
+          <select class="form-control" id="material" th:field="*{material}">
+
+            <div>
+              <option disabled="true" selected="selected" value="">Select</option>
+              <option value="Shingle">Shingle</option>
+              <option value="Metal">Metal</option>
+              <option value="Tile">Tile</option>
+            </div>
+        </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="col-xs-12 col-md-7">
+          <button type="submit" class="btn btn-primary btn-block">Add Roof</button>
+        </div>
+      </div>
+
+      <span th:utext="${successMessage}"></span>
+
+    </form>
+  </div>
+</body>
+
+</html>
