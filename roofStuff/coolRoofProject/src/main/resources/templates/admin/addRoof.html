@@ -38,11 +38,13 @@
     <h2>Add new Roof</h2>
     <form action="#" th:action="@{/admin/addRoof}" th:object="${roof}" method="post" class="form-horizontal">
       <div class="form-group row">
-
         <div class="col-xs-8 col-md-5">
           <label for="address"> Adresse eingeben </label>
           <input type="text" th:field="*{address}" placeholder "Address" class="form-control" id="address">
-
+        </div>
+        <div class="col-xs-8 col-md-5">
+          <label for="region"> Region </label>
+          <input type="text" th:field="*{region}" placeholder "Region" class="form-control" id="region">
         </div>
       </div>
 
@@ -50,19 +52,12 @@
         <h1>Google map</h1>
       </div>
 
-
-
-
-
-
-
       <h2>Roof Details</h2>
 
       <div class="form-group row">
         <div class="col-xs-5 col-md-2">
           <label for="age"> Age of Roof </label>
           <select class="form-control" id="age" th:field="*{age}">
-
             <div>
               <option disabled="true" selected="selected" value="">Select</option>
               <option value="0">0-5 years</option>
@@ -73,19 +68,7 @@
             </div>
         </select>
         </div>
-        <!--
-        <div>
-          <label>Angle</label>
-        </div>
-        <div class="form-group col-md-2" data-toggle="buttons">
-
-          <input type="radio" name="options" value="1" id="flat" th:field="*{angle}">
-          <label for="flat"> flat </label>
-
-          <input type="radio" name="options" value="2" id="angled" th:field="*{angle}">
-          <label for="angled"> angled </label>
-        </div>
-        -->
+      
       </div>
       <div class="form-group row">
         <div class="col-xs-5 col-md-2">
@@ -94,13 +77,7 @@
         </div>
         <div class="col-xs-7 col-md-5">
           <label for="material"> Material </label>
-        <!--
-          <label for="material"> Material </label>
-          <input type="text" th:field="*{material}" placeholder "material" class="form-control" id="material">
-        -->
-
           <select class="form-control" id="material" th:field="*{material}">
-
             <div>
               <option disabled="true" selected="selected" value="">Select</option>
               <option value="Shingle">Shingle</option>

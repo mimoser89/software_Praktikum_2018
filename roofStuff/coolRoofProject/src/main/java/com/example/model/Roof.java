@@ -12,10 +12,10 @@ import javax.persistence.Table;
 public class Roof {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "roofId")
+	@Column(name = "roof_id")
 	private int roofId;
 
-	@Column(name = "userId")
+	@Column(name = "user_id")
 	private int userId;
 
 	@Column(name = "address")
@@ -39,7 +39,7 @@ public class Roof {
 	@Column(name = "areaLeft")
 	private int areaLeft;
 
-	@Column(name = "pricePerSqm")
+	@Column(name = "price_per_sqm")
 	private int price;
 
 	public int getPrice() {

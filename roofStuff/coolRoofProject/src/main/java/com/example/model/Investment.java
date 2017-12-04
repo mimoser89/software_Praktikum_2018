@@ -25,87 +25,63 @@ public class Investment {
 	@Column(name = "latitude")
 	private String latitude;
 	@Column(name = "space")
-	private int space;
+	private String space;
 	@Column(name = "magnitude")
 	private int magnitude;
 	@Column(name = "status")
-	private int status;
+	private String status;
+	
 	
 	public int getId() {
 		return id;
 	}
-
-
 	public void setId(int id) {
 		this.id = id;
 	}
-
 	public int getUserId() {
 		return userId;
 	}
-
-
 	public void setUserId(int userId) {
 		this.userId = userId;
 	}
-	
 	public String getRegion() {
 		return region;
 	}
-
-
 	public void setRegion(String region) {
 		this.region = region;
 	}
-
-
 	public String getLongitude() {
 		return longitude;
 	}
-
-
 	public void setLongitude(String longitude) {
 		this.longitude = longitude;
 	}
-
-
 	public String getLatitude() {
 		return latitude;
 	}
-
-
 	public void setLatitude(String latitude) {
 		this.latitude = latitude;
 	}
-
-
-	public int getSpace() {
+	public String getSpace() {
 		return space;
 	}
-
-
-	public void setSpace(int space) {
+	public void setSpace(String space) {
 		this.space = space;
 	}
-
-
 	public int getMagnitude() {
 		return magnitude;
 	}
-
-
 	public void setMagnitude(int magnitude) {
 		this.magnitude = magnitude;
 	}
-
-
-	public int getStatus() {
+	public String getStatus() {
 		return status;
 	}
-
-
-	public void setStatus(int status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
+	
+	
+	
 
 }

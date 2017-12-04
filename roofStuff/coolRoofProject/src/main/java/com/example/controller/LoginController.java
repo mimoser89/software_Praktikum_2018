@@ -1,7 +1,6 @@
 package com.example.controller;
 
 import java.util.LinkedHashMap;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -138,50 +137,5 @@ public class LoginController {
 		return user;
 	}
 	
-//	@RequestMapping(value="/admin/investor_make_investments", method = RequestMethod.GET)
-//	public ModelAndView investorMakeInvestment(){
-//		ModelAndView modelAndView = new ModelAndView();
-//		
-//		User user;
-//		
-//		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//		
-//		if(auth.getName().contains("@")) {
-//			user = userService.findUserByEmail(auth.getName());
-//		}
-//		else {
-//			user = getSocialMediaUser();
-//		}
-//		
-//		modelAndView.addObject("userName", "Welcome " + user.getName() + " " + user.getLastName());
-//		modelAndView.addObject("adminMessage","Content for Investors");
-//		modelAndView.setViewName("admin/investor_make_investments");
-//		
-//		return modelAndView;
-//	}
-//	
-//	@RequestMapping(value="/admin/investor_my_investments", method = RequestMethod.GET)
-//	public ModelAndView investorMyInvestment(){
-//		ModelAndView modelAndView = new ModelAndView();
-//		
-//		User user;
-//		
-//		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//		
-//		if(auth.getName().contains("@")) {
-//			user = userService.findUserByEmail(auth.getName());
-//		}
-//		else {
-//			user = getSocialMediaUser();
-//		}
-//		
-//		modelAndView.addObject("userName", "Welcome " + user.getName() + " " + user.getLastName());
-//		modelAndView.addObject("adminMessage","Content for Investors");
-//		modelAndView.setViewName("/admin/investor_my_investments");
-//		
-//		return modelAndView;
-//	}
-	
-	
-	
+
 }

@@ -28,6 +28,8 @@ import org.springframework.security.oauth2.client.token.grant.code.Authorization
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.CompositeFilter;
 
@@ -51,6 +53,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Value("${spring.queries.roles-query}")
 	private String rolesQuery;
 
+	private CsrfTokenRepository csrfTokenRepository() 
+	{ 
+	    HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository(); 
+	    repository.setSessionAttributeName("_csrf");
+	    return repository; 
+	}
+	
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth)
 			throws Exception {
@@ -65,6 +74,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		
+		http.csrf().disable();
 		http.antMatcher("/**")
 		.addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class)
 		.authorizeRequests()
@@ -76,6 +86,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //			.antMatchers("/socialRegistration").permitAll()
 //			.antMatchers("/admin/**").hasAnyAuthority("roofOwner","investor").anyRequest()
 			.antMatchers("/admin/**").permitAll()
+			.antMatchers("/admin/investor_make_investments").permitAll()
 			.and().csrf().disable().formLogin()
 			.loginPage("/login").failureUrl("/login?error=true")
 			.defaultSuccessUrl("/default")

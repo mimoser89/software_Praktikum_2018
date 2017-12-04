@@ -26,4 +26,11 @@ public class InvestmentServiceImpl implements InvestmentService{
 		return investmentRepository.findByuserId(userId);
 	}
 
+
+	@Override
+	public void saveInvestment(Investment investment) {
+		investmentRepository.save(investment);
+		
+	}
+
 }

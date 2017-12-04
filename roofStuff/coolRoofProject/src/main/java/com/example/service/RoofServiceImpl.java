@@ -1,5 +1,7 @@
 package com.example.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,5 +24,10 @@ public class RoofServiceImpl implements RoofService {
 		roof.setPrice(10);	// TODO calculate
 		roof.setAreaLeft(roof.getArea());
 		roofRepository.save(roof);
+	}
+	
+	@Override
+	public List<Roof> findAll() {
+		return roofRepository.findAll();
 	}
 }

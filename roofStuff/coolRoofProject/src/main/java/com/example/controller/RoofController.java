@@ -24,7 +24,7 @@ public class RoofController {
 	private RoofService roofService;
 	@Autowired
 	private UserService userService;
-	
+	@Autowired
 	private LoginController lc = new LoginController();
 	
 	@RequestMapping(value="/admin/roofOwner", method = RequestMethod.GET)
@@ -50,19 +50,18 @@ public class RoofController {
 	
 	@RequestMapping(value = "/admin/addRoof", method = RequestMethod.GET)
 	public ModelAndView addRoof() {
-		
 		ModelAndView modelAndView = new ModelAndView();
 		Roof roof = new Roof();
 		User user;
 		modelAndView.addObject("roof", roof);
-
+		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-		if (auth.getName().contains("@")) {
+		if (auth.getName().contains("@"))
 			user = userService.findUserByEmail(auth.getName());
-		} else {
+		else
 			user = lc.getSocialMediaUser();
-		}
+
 		roof.setUserId(user.getId());
 		modelAndView.setViewName("admin/addRoof");
 		return modelAndView;
@@ -71,9 +70,8 @@ public class RoofController {
 	@RequestMapping(value = "/admin/addRoof", method = RequestMethod.POST)
 	public ModelAndView createNewRoof(@Valid Roof roof, BindingResult bindingResult) {
 		ModelAndView mav = new ModelAndView();
-		Roof roofExists = roofService.findRoofByAddress(roof.getAddress());
 
-		if (roofExists != null) {
+		if (roofService.findRoofByAddress(roof.getAddress()) != null) {
 			bindingResult.rejectValue("address", "error.roof", "This roof has already been registered");
 		}
 		if (bindingResult.hasErrors()) {
