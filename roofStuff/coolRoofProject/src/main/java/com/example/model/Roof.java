@@ -6,7 +6,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
 
+import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
@@ -20,31 +22,69 @@ public class Roof {
 	@Column(name = "user_id")
 	private int userId;
 
-	@NotEmpty(message = "*Please provide an address")
+	@NotEmpty(message = "*Please provide an address")	// TODO comes from map
 	@Column(name = "address")
 	private String address;
 
-	@NotEmpty(message = "*Please provide a region")
+	@NotEmpty(message = "*Please provide a region")	// TODO comes from map
 	@Column(name = "region")
 	private String region;
 
-	@Column(name = "angle")
+	@Column(name = "angle")	// TODO unused
 	private int angle;
 
+	@Min(value = 0, message = "*Please select the age of your roof")
 	@Column(name = "age")
 	private int age;
 
+	@NotBlank(message = "*Please select a roof material")
 	@Column(name = "material")
 	private String material;
 
 	@Column(name = "area")
 	private int area;
-
+	
 	@Column(name = "areaLeft")
 	private int areaLeft;
 
 	@Column(name = "price_per_sqm")
 	private int price;
+	
+	@Column(name = "roofPolygon")
+	private String roofPolygon;
+	
+	@Column(name = "longitude")
+	private String longitude;
+	
+	@Column(name = "latitude")
+	private String latitude;
+	
+	@Column(name = "zoomFactor")
+	private String zoomFactor;
+	
+	public String getZoomFactor() {
+		return zoomFactor;
+	}
+
+	public void setZoomFactor(String zoomFactor) {
+		this.zoomFactor = zoomFactor;
+	}
+
+	public String getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
+	}
+
+	public String getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
+	}
 
 	public int getPrice() {
 		return price;
@@ -124,5 +164,13 @@ public class Roof {
 
 	public void setAreaLeft(int areaLeft) {
 		this.areaLeft = areaLeft;
+	}
+	
+	public String getRoofPolygon() {
+		return roofPolygon;
+	}
+
+	public void setRoofPolygon(String roofPolygon) {
+		this.roofPolygon = roofPolygon;
 	}
 }

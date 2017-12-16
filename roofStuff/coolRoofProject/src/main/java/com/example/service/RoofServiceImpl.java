@@ -18,11 +18,14 @@ public class RoofServiceImpl implements RoofService {
 	public Roof findRoofByAddress(String address) {
 		return roofRepository.findRoofByAddress(address);
 	}
+	
+	@Override
+	public List<Roof> findAllRoofsByUserId(int uId) {
+		return roofRepository.findAllRoofsByUserId(uId);
+	}
 
 	@Override
 	public void saveRoof(Roof roof) {
-		roof.setPrice(10);	// TODO calculate
-		roof.setAreaLeft(roof.getArea());
 		roofRepository.save(roof);
 	}
 	

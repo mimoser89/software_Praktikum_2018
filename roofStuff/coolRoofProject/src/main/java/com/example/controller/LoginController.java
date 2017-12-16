@@ -136,6 +136,16 @@ public class LoginController {
 		
 		return user;
 	}
+
+	public User getLoggedInUser() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+		if (auth.getName().contains("@"))
+			return userService.findUserByEmail(auth.getName());
+		else
+			return getSocialMediaUser();
+	}
+
 	
 
 }

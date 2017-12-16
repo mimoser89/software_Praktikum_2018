@@ -12,5 +12,7 @@ public interface RoofRepository extends JpaRepository<Roof, Long> {
 	
 	Roof findRoofByAddress(String address);
 	
+	List<Roof> findAllRoofsByUserId(int uId);
+	
 	List<Roof> findAll();
 }
