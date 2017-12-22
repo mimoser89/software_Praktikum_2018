@@ -1,0 +1,195 @@
+<!-- Michael Moser, Martin Schönegger -->
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<title>Make investment</title>
+<!--  INCLUDE CSS -->
+<link rel="stylesheet" type="text/css" th:href="@{/css/home.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/investor_make_investments.css}" />
+
+<!-- INCLUDE SCRIPT -->
+<script src="/javascript/make_investment.js"></script>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script	src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<!-- INCLUDE "BODY" FONT RALEWAY -->
+<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+<!--  INCLUDE FONT ROBOTO  -->
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+</head>
+
+<script th:inline="javascript">
+
+	//roofs
+	var roofList;
+	var selectedRoofList = new Array();
+	
+	//BEGIN MAP
+	var map;
+	var mapName = "maps_pre_selection";
+	
+	var longitude;
+	var latitude;
+	var zoomfactor;
+	var jsonString;
+	//END MAP
+	
+	//onload function
+	window.onload = function () {
+		
+		//initialize roofList
+		roofList = [[${roofs}]];
+		
+		//initialize regionList
+		var regionList = [[${regions}]];
+		
+		//get selected region
+	    var selectedRegion = document.getElementById("avaliable-region");
+	    
+		//add options to drop down
+	    for(var j = 0; j < regionList.length; j++) {
+	    	var option = document.createElement('option');
+	    	 option.text = option.value = regionList[j];
+	    	 
+	    	 selectedRegion.add(option, 0);
+	    }
+	       
+	};
+	
+</script>
+
+<!-- NEED FOR GOOGLE MAPS -->
+<script async defer
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBGBWhUOkEthohFqecddY4RWSysZtVcIRo&libraries=drawing,geometry">
+</script> 
+
+<body>
+    <!-- NAVIGATION -->
+	<nav class="navbar navbar-inverse">
+	  <div class="container-fluid">
+	    <div class="navbar-header">
+	      <button type="button" class="pull-left navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>                        
+	      </button>
+	      <a class="navbar-brand" href="#">CoolRoofs</a>
+	    </div>
+	    <div class="collapse navbar-collapse" id="myNavbar">
+	      <ul class="nav navbar-nav">
+			<li class="active"><a href="investor_make_investments">Make Investment</a></li>
+	        <li><a href="investor_my_investments.html">My Investments</a></li>
+	      </ul>
+	    </div>
+	  </div>
+	</nav>
+	
+	<!-- MAIN SECTION -->
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12 nomp">
+				<div class="panel-group">
+					<div class="panel panel-primary">
+						<div class="panel-heading panel-change" th:utext= "${userName}"></div>
+					</div>
+				</div>
+			</div>
+		</div>	
+		<!--  BEGINN FORM -->
+		<form autocomplete="off" action="#" th:action="@{/admin/investor_make_investments}"
+					th:object="${investment}" method="post" class="form-horizontal" role="form">
+		<!-- HIDDEN INPUT TYPE -->
+		<input id ="roofIds" type="hidden" name="roofIds" th:field="*{roofIds}" value=""/>
+					
+		<div class="row row-height">
+			<div class="col-md-6 col-height left-side">
+				<div class="make-investment-fields">
+					<div class="field-label">Region:</div>
+					<div class="field-select">
+						<div id="regionselection">
+							<select id="avaliable-region" class="form-control"></select>
+						</div>
+					</div>
+				</div>
+				<div class="make-investment-fields">
+					<div class="field-label">Space: (m²)</div>
+					<div class="field-select">
+						<div id="spaceselection">
+							<input type="text" id="selectedSpace" th:field="*{space}" placeholder="space in m²" class="form-control"/>
+						</div>
+					</div>
+				</div>
+				<div class="make-investment-fields">
+					<div class="field-label">Longitude:</div>
+					<div class="field-select">
+						<div id="longitude">
+							<input type="text" id="selectedLongitude" placeholder="longitude" class="form-control" disabled/>
+						</div>
+					</div>
+				</div>
+				<div class="make-investment-fields">
+					<div class="field-label">Latitude:</div>
+					<div class="field-select">
+						<div id="latitude">
+							<input type="text" id="selectedLatitude" placeholder="latitude" class="form-control" disabled/>
+						</div>
+					</div>
+				</div>
+				<div class="make-investment-fields">
+					<div class="field-label">Magnitude: (€)</div>
+					<div class="field-select">
+						<div id="magnitude">
+							<input type="text" id="selectedMagnitude" placeholder="magnitude" class="form-control" disabled/>
+						</div>
+					</div>
+				</div>
+				<div class="make-investment-fields">
+					<div class="field-label">Age: (years)</div>
+					<div class="field-select">
+						<div id="age">
+							<input type="text" id="selectedAge" placeholder="age" class="form-control" disabled/>
+						</div>
+					</div>
+				</div>
+				<div class="make-investment-fields">
+					<div class="field-label"></div>
+					<div class="field-select">
+						<button type="button" id="select-button" class="standard_button" onclick="updateFields_and_Check_Area()">Select</button>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6 col-height right-side">
+				<div class="make-investment-fields">
+					<div class="field-label">Selected roof:</div>
+					<div class="field-select">
+						<div id="investment">
+							<select id="selectedInvestment" class="form-control" onchange="initMap()">
+								<option value="" selected disabled hidden>No investment made</option>
+							</select>
+						</div>		
+					</div>
+				</div>
+				<div id="maps_pre_selection" class="make-investment-map"></div>
+				<div class="make-investment-fields">
+					<div class="field-select">
+						<button type="submit" id="confirm-button" class="standard_button" style="display:none;">Confirm your investment</button>
+					</div>
+				</div>
+			</div>
+		</div>	
+		</form>
+		<div class="row nomp">
+			<div class="col-md-12 nomp">
+				<form th:action="@{/logout}" method="get">
+					<button class="logout-button" name="registration" type="Submit">Logout</button>
+				</form>  
+			</div>
+		</div>
+	</div>
+</body>
+</html>

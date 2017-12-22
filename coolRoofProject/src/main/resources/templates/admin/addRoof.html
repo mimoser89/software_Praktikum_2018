@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Add roof</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/home.css}" />
+  <link rel="stylesheet" type="text/css" th:href="@{/css/owner.css}" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://code.jquery.com/jquery-latest.js"></script>
+</head>
+
+
+<body>
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="pull-left navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        <a class="navbar-brand" href="#">CoolRoofs</a>
+      </div>
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav">
+          <li>
+            <a href="roofOwner.html">Home</a>
+          </li>
+          <li class="active">
+            <a href="addRoof.html">Add Roof</a>
+          </li>
+          <li>
+            <a href="owner_my_roofs.html">My Roofs</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+  <div class="container">
+    <h2>Add new Roof</h2>
+    <form onkeypress="return event.keyCode != 13;" action="#" th:action="@{/admin/addRoof}" th:object="${roof}" method="post" class="form-horizontal">
+      <div class="form-group row extra-padding">
+        <input id="roofPolygon" type="hidden" name="roofPolygon" th:field="*{roofPolygon}" value="" />
+        <input id="longitude" type="hidden" name="longitude" th:field="*{longitude}" value="" />
+        <input id="latitude" type="hidden" name="latitude" th:field="*{latitude}" value="" />
+        <input id="zoomFactor" type="hidden" name="zoomFactor" th:field="*{zoomFactor}" value="" />
+        <input id="region" type="hidden" name="region" th:field="*{region}" value="" />
+
+
+        <h2>Roof Details</h2>
+        <div>
+          <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+        </div>
+        <div class="row row-height">
+          <div class="col-md-8 col-sm-12 col-height">
+            <div class="add-roof">
+              <div id="mapsX"></div>
+            </div>
+          </div>
+        </div>
+        <div class="row row-height">
+          <div id="panel" class="col-md-4 col-sm-6 col-xs-8">
+            <div id="panel-content">
+              <div id="controls">
+                Select polygon
+                <select id="polyList"></select>
+                <button type="button" id="btnDelete">Delete Selected</button>
+                <button type="button" id="btnDeleteAll">Delete All</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-xs-4 col-sm-4 col-md-2">
+            <label for="age">Age</label>
+            <label th:if="${#fields.hasErrors('age')}" th:errors="*{age}" class="validation-message"></label>
+            <select class="form-control" id="age" th:field="*{age}">
+              <div>
+                <option value="0">0-5 years</option>
+                <option value="5">5-10 years</option>
+                <option value="10">10-15 years</option>
+                <option value="15">15-20 years</option>
+                <option value="20">20+ years</option>
+              </div>
+            </select>
+          </div>
+          <div class="col-xs-4 col-sm-2 col-md-2">
+            <label for="area"> Area </label>
+            <input type="number" th:field="*{area}" placeholder="area" class="form-control" id="area" readonly="readonly">
+          </div>
+          <div class="col-xs-4 col-sm-2 col-md-2">
+            <label for="material"> Material </label>
+            <select class="form-control" id="material" th:field="*{material}">
+              <div>
+                <option disabled="true" selected="selected" value="">Select</option>
+                <option value="Shingle">Shingle</option>
+                <option value="Metal">Metal</option>
+                <option value="Tile">Tile</option>
+              </div>
+            </select>
+          </div>
+          <!--<div class="col-xs-4 col-sm-4 col-md-2">
+            <label for="region">Region</label>
+            <select class="form-control" id="region" th:field="*{region}">
+              <div>
+                <option disabled="true" selected="selected" value="">Select</option>
+                <option value="Europe">Europe</option>
+                <option value="Asia">Asia</option>
+                <option value="Africa">Africa</option>
+                <option value="America">America</option>
+                <option value="Oceania">Oceania</option>
+              </div>
+            </select>
+          </div>-->
+        </div>
+
+        <div class="form-group">
+          <div class="col-xs-12 col-md-8">
+            <button type="submit" class="btn btn-primary btn-block">Add Roof</button>
+          </div>
+        </div>
+
+        <span th:utext="${successMessage}" />
+      </div>
+    </form>
+  </div>
+
+
+  <script type="text/javascript">
+    var map;
+    var coordinates;
+
+    function initMap() {
+      map = new google.maps.Map(document.getElementById('mapsX'), {
+        center: {
+          lat: 47.78,
+          lng: 13.05
+        },
+        zoom: 20,
+        tilt: 0,
+        // only show roadmap type of map, and disable ability to switch to other type
+        mapTypeId: google.maps.MapTypeId.SATELLITE,
+        mapTypeControl: false,
+        panControl: false,
+        streetViewControl: false
+      });
+      map.data.setControls(['Polygon']);
+      map.data.setStyle({
+        editable: true,
+        draggable: true
+      });
+      bindDataLayerListeners(map.data);
+
+      var input = document.getElementById('pac-input');
+      var searchBox = new google.maps.places.SearchBox(input);
+      map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+      // Bias the SearchBox results towards current map's viewport.
+      map.addListener('bounds_changed', function() {
+        searchBox.setBounds(map.getBounds());
+      });
+
+      var markers = [];
+      // Listen for the event fired when the user selects a prediction and retrieve
+      // more details for that place.
+      searchBox.addListener('places_changed', function() {
+        var places = searchBox.getPlaces();
+
+        if (places.length == 0) {
+          return;
+        }
+
+        // Clear out the old markers.
+        markers.forEach(function(marker) {
+          marker.setMap(null);
+        });
+        markers = [];
+
+        // For each place, get the icon, name and location.
+        var bounds = new google.maps.LatLngBounds();
+        places.forEach(function(place) {
+          if (!place.geometry) {
+            console.log("Returned place contains no geometry");
+            return;
+          }
+          var icon = {
+            url: place.icon,
+            size: new google.maps.Size(71, 71),
+            origin: new google.maps.Point(0, 0),
+            anchor: new google.maps.Point(17, 34),
+            scaledSize: new google.maps.Size(25, 25)
+          };
+
+          // Create a marker for each place.
+          markers.push(new google.maps.Marker({
+            map: map,
+            icon: icon,
+            title: place.name,
+            position: place.geometry.location
+          }));
+
+          if (place.geometry.viewport) {
+            // Only geocodes have viewport.
+            bounds.union(place.geometry.viewport);
+          } else {
+            bounds.extend(place.geometry.location);
+          }
+        });
+        map.fitBounds(bounds);
+      });
+      //loadPolygons(map);  //load saved data */
+    }
+
+    // Apply listeners to refresh the GeoJson display on a given data layer.
+    function bindDataLayerListeners(dataLayer) {
+      dataLayer.addListener('addfeature', savePolygon);
+      dataLayer.addListener('removefeature', savePolygon);
+    }
+
+    function loadPolygons(map) {
+      var data = JSON.parse(localStorage.getItem('geoData')); // this will be needed
+      //alert(data);
+      map.data.forEach(function(f) {
+        map.data.remove(f);
+      });
+      map.data.addGeoJson(data) // and this
+    }
+
+    function savePolygon() {
+
+      map.data.toGeoJson(function(json) {
+        localStorage.setItem('geoData', JSON.stringify(json));
+        initControls(json);
+      });
+
+      calcar();
+    }
+
+    function setProperties() {
+      map.data.toGeoJson(function(json) {
+        document.getElementById('roofPolygon').value = JSON.stringify(json);
+        //alert(JSON.stringify(json));
+
+        var split = coordinates.toString().split(",");
+        var lati = split[0].substring(1, split[0].length);
+        var longi = split[1].substring(0, split[1].length - 1);
+        
+        geocodeLatLng(coordinates);
+        
+        document.getElementById('longitude').value = split[1].substring(0, split[1].length - 1);
+        document.getElementById('latitude').value = split[0].substring(1, split[0].length);
+        document.getElementById('zoomFactor').value = map.getZoom();        
+      });
+    }
+
+    function initControls(data) {
+      var sel = document.getElementById('polyList');
+      sel.options.length = 0;
+      for (var i = 0; i < data.features.length; i++) {
+        var opt = document.createElement('option');
+        opt.innerHTML = data.features[i].geometry.type;
+
+        opt.value = i;
+        sel.appendChild(opt);
+      }
+
+      document.getElementById("btnDelete").disabled = (data.features.length === 0); //original content
+      document.getElementById("btnDeleteAll").disabled = (data.features.length === 0);
+
+      document.getElementById("btnDelete").onclick = function() {
+
+        var selIdx = sel.options[sel.selectedIndex].value; //get poly index
+        data.features.splice(parseInt(selIdx), 1);
+        //reload
+        localStorage.setItem('geoData', JSON.stringify(data));
+        initControls(data);
+        loadPolygons(map);
+      };
+      document.getElementById("btnDeleteAll").onclick = function() {
+        localStorage.setItem('geoData', null);
+        loadPolygons(map);
+      };
+    }
+
+    function calcar() {
+      var areasum = 0;
+      //         var area = google.maps.geometry.spherical.computeArea(selectedShape.getPath());
+      //         document.getElementById("test3").innerHTML = "Area =" + area.toFixed(2);
+      map.data.forEach(function(feature) {
+        if (feature.getGeometry().getType() == "Polygon") {
+          var bounds = [];
+          var polyBnds = new google.maps.LatLngBounds();
+
+          feature.getGeometry().forEachLatLng(function(path) {
+            bounds.push(path);
+
+            latlngforDB = path;
+
+            polyBnds.extend(path);
+            coordinates = path;
+          });
+          console.log(bounds);
+          var area = google.maps.geometry.spherical.computeArea(bounds);
+          console.log(area);
+          area = Math.round(area);
+          areasum += area;
+        }
+
+      });
+      document.getElementById('area').value = areasum;
+      setProperties();
+
+    }
+    
+    /** SRC:
+      * https://gist.github.com/AmirHossein/92a0597b5f723b19c648 besser als meine :(
+    */ 
+    
+    //Funktion zum herrausfinden des Landes aus einer Koordinate
+    // @latlng zusammengesetzte koordinate (siehe oben)
+    // keine rückgabe parameter, schreibt derzeit ergebnis in .innerHTML
+    // ich würde "countrycode" weiter verwenden, der sollte international sein 
+    function geocodeLatLng(latlng){
+
+    new google.maps.Geocoder().geocode({'latLng' : latlng}, function(results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+        if (results[1]) {
+          var country = null, countryCode = null, city = null, cityAlt = null;
+          var c, lc, component;
+          for (var r = 0, rl = results.length; r < rl; r += 1) {
+            var result = results[r];
+
+            if (!city && result.types[0] === 'locality') {
+              for (c = 0, lc = result.address_components.length; c < lc; c += 1) {
+                component = result.address_components[c];
+
+                if (component.types[0] === 'locality') {
+                  city = component.long_name;
+                  break;
+                }
+              }
+            }
+            else if (!city && !cityAlt && result.types[0] === 'administrative_area_level_1') {
+              for (c = 0, lc = result.address_components.length; c < lc; c += 1) {
+                component = result.address_components[c];
+
+                if (component.types[0] === 'administrative_area_level_1') {
+                  cityAlt = component.long_name;
+                  break;
+                }
+              }
+            } else if (!country && result.types[0] === 'country') {
+              country = result.address_components[0].long_name;
+              countryCode = result.address_components[0].short_name;
+            }
+
+            if (city && country) {
+              break;
+            }
+          }
+
+          // todo Ausgabeformat/Ziel ändern
+          console.log("City: " + city + ", City2: " + cityAlt + ", Country: " + country + ", Country Code: " + countryCode);
+          //document.getElementById('city').innerHTML = city;
+          //document.getElementById('cityAlt').innerHTML = cityAlt;
+          //document.getElementById('country').innerHTML = country;
+          //document.getElementById('countryCode').innerHTML = countryCode;
+          document.getElementById('region').value = getContinentFromCountryCode(countryCode);
+        }
+      }
+    });
+    }
+
+
+// this function returns the continent for the @input countryCode of a country
+function getContinentFromCountryCode(countryCode){
+	// country to continent mapping from https://dev.maxmind.com/geoip/legacy/codes/country_continent/
+	
+	var cc = countryCode;
+	var continent;
+// generator http://jsfiddle.net/walkerneo/3NTpU/3/
+	//EU,europe AS,Asia NA,Namerica AF,Africa oc,oceania
+switch (cc) {
+case 'A1':
+	continent='--';
+	break;
+case 'A2':
+	continent='--';
+	break;
+case 'AD':
+	continent='Europe';
+	break;
+case 'AE':
+	continent='Asia';
+	break;
+case 'Africa':
+	continent='Asia';
+	break;
+case 'AG':
+	continent='America (North)';
+	break;
+case 'AI':
+	continent='America (North)';
+	break;
+case 'AL':
+	continent='Europe';
+	break;
+case 'AM':
+	continent='Asia';
+	break;
+case 'AN':
+	continent='America (North)';
+	break;
+case 'AO':
+	continent='Africa';
+	break;
+case 'AP':
+	continent='Asia';
+	break;
+case 'AQ':
+	continent='AN';
+	break;
+case 'AR':
+	continent='America (South)';
+	break;
+case 'Asia':
+	continent='Oceania';
+	break;
+case 'AT':
+	continent='Europe';
+	break;
+case 'AU':
+	continent='Oceania';
+	break;
+case 'AW':
+	continent='America (North)';
+	break;
+case 'AX':
+	continent='Europe';
+	break;
+case 'AZ':
+	continent='Asia';
+	break;
+case 'BA':
+	continent='Europe';
+	break;
+case 'BB':
+	continent='America (North)';
+	break;
+case 'BD':
+	continent='Asia';
+	break;
+case 'BE':
+	continent='Europe';
+	break;
+case 'BF':
+	continent='Africa';
+	break;
+case 'BG':
+	continent='Europe';
+	break;
+case 'BH':
+	continent='Asia';
+	break;
+case 'BI':
+	continent='Africa';
+	break;
+case 'BJ':
+	continent='Africa';
+	break;
+case 'BL':
+	continent='America (North)';
+	break;
+case 'BM':
+	continent='America (North)';
+	break;
+case 'BN':
+	continent='Asia';
+	break;
+case 'BO':
+	continent='America (South)';
+	break;
+case 'BR':
+	continent='America (South)';
+	break;
+case 'BS':
+	continent='America (North)';
+	break;
+case 'BT':
+	continent='Asia';
+	break;
+case 'BV':
+	continent='AN';
+	break;
+case 'BW':
+	continent='Africa';
+	break;
+case 'BY':
+	continent='Europe';
+	break;
+case 'BZ':
+	continent='America (North)';
+	break;
+case 'CA':
+	continent='America (North)';
+	break;
+case 'CC':
+	continent='Asia';
+	break;
+case 'CD':
+	continent='Africa';
+	break;
+case 'CF':
+	continent='Africa';
+	break;
+case 'CG':
+	continent='Africa';
+	break;
+case 'CH':
+	continent='Europe';
+	break;
+case 'CI':
+	continent='Africa';
+	break;
+case 'CK':
+	continent='Oceania';
+	break;
+case 'CL':
+	continent='America (South)';
+	break;
+case 'CM':
+	continent='Africa';
+	break;
+case 'CN':
+	continent='Asia';
+	break;
+case 'CO':
+	continent='America (South)';
+	break;
+case 'CR':
+	continent='America (North)';
+	break;
+case 'CU':
+	continent='America (North)';
+	break;
+case 'CV':
+	continent='Africa';
+	break;
+case 'CX':
+	continent='Asia';
+	break;
+case 'CY':
+	continent='Asia';
+	break;
+case 'CZ':
+	continent='Europe';
+	break;
+case 'DE':
+	continent='Europe';
+	break;
+case 'DJ':
+	continent='Africa';
+	break;
+case 'DK':
+	continent='Europe';
+	break;
+case 'DM':
+	continent='America (North)';
+	break;
+case 'DO':
+	continent='America (North)';
+	break;
+case 'DZ':
+	continent='Africa';
+	break;
+case 'EC':
+	continent='America (South)';
+	break;
+case 'EE':
+	continent='Europe';
+	break;
+case 'EG':
+	continent='Africa';
+	break;
+case 'EH':
+	continent='Africa';
+	break;
+case 'ER':
+	continent='Africa';
+	break;
+case 'ES':
+	continent='Europe';
+	break;
+case 'ET':
+	continent='Africa';
+	break;
+case 'Europe':
+	continent='Europe';
+	break;
+case 'FI':
+	continent='Europe';
+	break;
+case 'FJ':
+	continent='Oceania';
+	break;
+case 'FK':
+	continent='America (South)';
+	break;
+case 'FM':
+	continent='Oceania';
+	break;
+case 'FO':
+	continent='Europe';
+	break;
+case 'FR':
+	continent='Europe';
+	break;
+case 'FX':
+	continent='Europe';
+	break;
+case 'GA':
+	continent='Africa';
+	break;
+case 'GB':
+	continent='Europe';
+	break;
+case 'GD':
+	continent='America (North)';
+	break;
+case 'GE':
+	continent='Asia';
+	break;
+case 'GF':
+	continent='America (South)';
+	break;
+case 'GG':
+	continent='Europe';
+	break;
+case 'GH':
+	continent='Africa';
+	break;
+case 'GI':
+	continent='Europe';
+	break;
+case 'GL':
+	continent='America (North)';
+	break;
+case 'GM':
+	continent='Africa';
+	break;
+case 'GN':
+	continent='Africa';
+	break;
+case 'GP':
+	continent='America (North)';
+	break;
+case 'GQ':
+	continent='Africa';
+	break;
+case 'GR':
+	continent='Europe';
+	break;
+case 'GS':
+	continent='AN';
+	break;
+case 'GT':
+	continent='America (North)';
+	break;
+case 'GU':
+	continent='Oceania';
+	break;
+case 'GW':
+	continent='Africa';
+	break;
+case 'GY':
+	continent='America (South)';
+	break;
+case 'HK':
+	continent='Asia';
+	break;
+case 'HM':
+	continent='AN';
+	break;
+case 'HN':
+	continent='America (North)';
+	break;
+case 'HR':
+	continent='Europe';
+	break;
+case 'HT':
+	continent='America (North)';
+	break;
+case 'HU':
+	continent='Europe';
+	break;
+case 'ID':
+	continent='Asia';
+	break;
+case 'IE':
+	continent='Europe';
+	break;
+case 'IL':
+	continent='Asia';
+	break;
+case 'IM':
+	continent='Europe';
+	break;
+case 'IN':
+	continent='Asia';
+	break;
+case 'IO':
+	continent='Asia';
+	break;
+case 'IQ':
+	continent='Asia';
+	break;
+case 'IR':
+	continent='Asia';
+	break;
+case 'IS':
+	continent='Europe';
+	break;
+case 'IT':
+	continent='Europe';
+	break;
+case 'JE':
+	continent='Europe';
+	break;
+case 'JM':
+	continent='America (North)';
+	break;
+case 'JO':
+	continent='Asia';
+	break;
+case 'JP':
+	continent='Asia';
+	break;
+case 'KE':
+	continent='Africa';
+	break;
+case 'KG':
+	continent='Asia';
+	break;
+case 'KH':
+	continent='Asia';
+	break;
+case 'KI':
+	continent='Oceania';
+	break;
+case 'KM':
+	continent='Africa';
+	break;
+case 'KN':
+	continent='America (North)';
+	break;
+case 'KP':
+	continent='Asia';
+	break;
+case 'KR':
+	continent='Asia';
+	break;
+case 'KW':
+	continent='Asia';
+	break;
+case 'KY':
+	continent='America (North)';
+	break;
+case 'KZ':
+	continent='Asia';
+	break;
+case 'LA':
+	continent='Asia';
+	break;
+case 'LB':
+	continent='Asia';
+	break;
+case 'LC':
+	continent='America (North)';
+	break;
+case 'LI':
+	continent='Europe';
+	break;
+case 'LK':
+	continent='Asia';
+	break;
+case 'LR':
+	continent='Africa';
+	break;
+case 'LS':
+	continent='Africa';
+	break;
+case 'LT':
+	continent='Europe';
+	break;
+case 'LU':
+	continent='Europe';
+	break;
+case 'LV':
+	continent='Europe';
+	break;
+case 'LY':
+	continent='Africa';
+	break;
+case 'MA':
+	continent='Africa';
+	break;
+case 'MC':
+	continent='Europe';
+	break;
+case 'MD':
+	continent='Europe';
+	break;
+case 'ME':
+	continent='Europe';
+	break;
+case 'MF':
+	continent='America (North)';
+	break;
+case 'MG':
+	continent='Africa';
+	break;
+case 'MH':
+	continent='Oceania';
+	break;
+case 'MK':
+	continent='Europe';
+	break;
+case 'ML':
+	continent='Africa';
+	break;
+case 'MM':
+	continent='Asia';
+	break;
+case 'MN':
+	continent='Asia';
+	break;
+case 'MO':
+	continent='Asia';
+	break;
+case 'MP':
+	continent='Oceania';
+	break;
+case 'MQ':
+	continent='America (North)';
+	break;
+case 'MR':
+	continent='Africa';
+	break;
+case 'MS':
+	continent='America (North)';
+	break;
+case 'MT':
+	continent='Europe';
+	break;
+case 'MU':
+	continent='Africa';
+	break;
+case 'MV':
+	continent='Asia';
+	break;
+case 'MW':
+	continent='Africa';
+	break;
+case 'MX':
+	continent='America (North)';
+	break;
+case 'MY':
+	continent='Asia';
+	break;
+case 'MZ':
+	continent='Africa';
+	break;
+case 'America (North)':
+	continent='Africa';
+	break;
+case 'NC':
+	continent='Oceania';
+	break;
+case 'NE':
+	continent='Africa';
+	break;
+case 'NF':
+	continent='Oceania';
+	break;
+case 'NG':
+	continent='Africa';
+	break;
+case 'NI':
+	continent='America (North)';
+	break;
+case 'NL':
+	continent='Europe';
+	break;
+case 'NO':
+	continent='Europe';
+	break;
+case 'NP':
+	continent='Asia';
+	break;
+case 'NR':
+	continent='Oceania';
+	break;
+case 'NU':
+	continent='Oceania';
+	break;
+case 'NZ':
+	continent='Oceania';
+	break;
+case 'O1':
+	continent='--';
+	break;
+case 'OM':
+	continent='Asia';
+	break;
+case 'PA':
+	continent='America (North)';
+	break;
+case 'PE':
+	continent='America (South)';
+	break;
+case 'PF':
+	continent='Oceania';
+	break;
+case 'PG':
+	continent='Oceania';
+	break;
+case 'PH':
+	continent='Asia';
+	break;
+case 'PK':
+	continent='Asia';
+	break;
+case 'PL':
+	continent='Europe';
+	break;
+case 'PM':
+	continent='America (North)';
+	break;
+case 'PN':
+	continent='Oceania';
+	break;
+case 'PR':
+	continent='America (North)';
+	break;
+case 'PS':
+	continent='Asia';
+	break;
+case 'PT':
+	continent='Europe';
+	break;
+case 'PW':
+	continent='Oceania';
+	break;
+case 'PY':
+	continent='America (South)';
+	break;
+case 'QA':
+	continent='Asia';
+	break;
+case 'RE':
+	continent='Africa';
+	break;
+case 'RO':
+	continent='Europe';
+	break;
+case 'RS':
+	continent='Europe';
+	break;
+case 'RU':
+	continent='Europe';
+	break;
+case 'RW':
+	continent='Africa';
+	break;
+case 'America (South)':
+	continent='Asia';
+	break;
+case 'SB':
+	continent='Oceania';
+	break;
+case 'SC':
+	continent='Africa';
+	break;
+case 'SD':
+	continent='Africa';
+	break;
+case 'SE':
+	continent='Europe';
+	break;
+case 'SG':
+	continent='Asia';
+	break;
+case 'SH':
+	continent='Africa';
+	break;
+case 'SI':
+	continent='Europe';
+	break;
+case 'SJ':
+	continent='Europe';
+	break;
+case 'SK':
+	continent='Europe';
+	break;
+case 'SL':
+	continent='Africa';
+	break;
+case 'SM':
+	continent='Europe';
+	break;
+case 'SN':
+	continent='Africa';
+	break;
+case 'SO':
+	continent='Africa';
+	break;
+case 'SR':
+	continent='America (South)';
+	break;
+case 'ST':
+	continent='Africa';
+	break;
+case 'SV':
+	continent='America (North)';
+	break;
+case 'SY':
+	continent='Asia';
+	break;
+case 'SZ':
+	continent='Africa';
+	break;
+case 'TC':
+	continent='America (North)';
+	break;
+case 'TD':
+	continent='Africa';
+	break;
+case 'TF':
+	continent='AN';
+	break;
+case 'TG':
+	continent='Africa';
+	break;
+case 'TH':
+	continent='Asia';
+	break;
+case 'TJ':
+	continent='Asia';
+	break;
+case 'TK':
+	continent='Oceania';
+	break;
+case 'TL':
+	continent='Asia';
+	break;
+case 'TM':
+	continent='Asia';
+	break;
+case 'TN':
+	continent='Africa';
+	break;
+case 'TO':
+	continent='Oceania';
+	break;
+case 'TR':
+	continent='Europe';
+	break;
+case 'TT':
+	continent='America (North)';
+	break;
+case 'TV':
+	continent='Oceania';
+	break;
+case 'TW':
+	continent='Asia';
+	break;
+case 'TZ':
+	continent='Africa';
+	break;
+case 'UA':
+	continent='Europe';
+	break;
+case 'UG':
+	continent='Africa';
+	break;
+case 'UM':
+	continent='Oceania';
+	break;
+case 'US':
+	continent='America (North)';
+	break;
+case 'UY':
+	continent='America (South)';
+	break;
+case 'UZ':
+	continent='Asia';
+	break;
+case 'VA':
+	continent='Europe';
+	break;
+case 'VC':
+	continent='America (North)';
+	break;
+case 'VE':
+	continent='America (South)';
+	break;
+case 'VG':
+	continent='America (North)';
+	break;
+case 'VI':
+	continent='America (North)';
+	break;
+case 'VN':
+	continent='Asia';
+	break;
+case 'VU':
+	continent='Oceania';
+	break;
+case 'WF':
+	continent='Oceania';
+	break;
+case 'WS':
+	continent='Oceania';
+	break;
+case 'YE':
+	continent='Asia';
+	break;
+case 'YT':
+	continent='Africa';
+	break;
+case 'ZA':
+	continent='Africa';
+	break;
+case 'ZM':
+	continent='Africa';
+	break;
+case 'ZW':
+	continent='Africa';
+	break;
+default:
+	break;
+}
+
+return continent;
+	
+}
+    
+    
+  </script>
+
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBGBWhUOkEthohFqecddY4RWSysZtVcIRo&libraries=drawing,geometry,places&callback=initMap">
+  </script>
+
+</body>
+
+</html>

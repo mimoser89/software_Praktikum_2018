@@ -1,0 +1,18 @@
+/*
+Theme Name: registration
+Author: Michael Moser, Martin Schönegger
+*/
+
+.validation-message {
+	font-style: normal;
+	font-size: 12px;
+	color: #FF1C19;
+}
+
+.bordershow {
+	border: 1px solid green;
+}
+
+.btn-block {
+	background-color: #423b3b!important; border: none!Important;
+}
