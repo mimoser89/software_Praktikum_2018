@@ -8,7 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.Min;
 
-import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.NotEmpty;
 
 @Entity
 @Table(name = "roof")
@@ -24,7 +24,6 @@ public class Roof {
 	@Column(name = "address")
 	private String address;
 
-	@NotBlank(message = "*Please provide a region")	
 	@Column(name = "region")
 	private String region;
 
@@ -35,7 +34,7 @@ public class Roof {
 	@Column(name = "age")
 	private int age;
 
-	@NotBlank(message = "*Please select a roof material")
+	@NotEmpty(message = "*Please select a roof material")
 	@Column(name = "material")
 	private String material;
 
