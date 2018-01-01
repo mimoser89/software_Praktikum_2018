@@ -3,7 +3,7 @@
 	xmlns:th="http://www.thymeleaf.org">
 
 <head>
-<title>Investor Page</title>
+<title>My Roofs</title>
 <!-- INCLUDE CSS -->
 <link rel="stylesheet" type="text/css" th:href="@{/css/home.css}" />
 <link rel="stylesheet" type="text/css" th:href="@{/css/owner.css}" />
@@ -17,69 +17,47 @@
 <script th:inline="javascript">
 
 	var myroofsList = [[${myroofs}]];
-	var roofsList = [[${roofs}]];
 	var html = "";
 
 	var map = new Array(myroofsList.length);
-	var oneRoof;
-
-	var latitude = new Array(myroofsList.length);
-	var longitude = new Array(myroofsList.length);
-	var zoomfactor = new Array(myroofsList.length);
-	var jsonString = new Array(myroofsList.length);
-	var region = new Array(myroofsList.length);
 
 	window.onload = function () {
 		initMap();
 		initAttributes();
 	}
 
-	function findRoofById(id) {
-		for(var i=0;i < roofsList.length; i++) {
-			if(id === roofsList[i].roofId) {
-				return roofsList[i];
-			}
-		}
-	}
-
 	function initAttributes() {
+    var currentRoof;
+    
 		for(var i = 0; i < myroofsList.length; i++) {
-
-			var id = "investment_" + i;
+      currentRoof = myroofsList[i];
+      
 			var idRegion = "region" + i;
 			var idLongitude = "longitude" + i;
 			var idLatitude = "latitude" + i;
+      var idArea = "area" + i;
 
-			var selectedRoof = document.getElementById(id).value;
-
-			region[i] = myroofsList[i].region;
-			longitude[i] = myroofsList[i].longitude;
-			latitude[i] = myroofsList[i].latitude;
-
-			document.getElementById(idRegion).innerHTML = 'Region: ' + region[i];
-			document.getElementById(idLongitude).innerHTML= 'Longitude: ' + parseFloat(longitude[i]).toFixed(5);
-			document.getElementById(idLatitude).innerHTML ='Latitude: ' + parseFloat(latitude[i]).toFixed(5);
+			document.getElementById(idRegion).innerHTML = 'Region: ' + currentRoof.region;
+			document.getElementById(idLongitude).innerHTML= 'Longitude: ' + parseFloat(currentRoof.longitude).toFixed(5);
+			document.getElementById(idLatitude).innerHTML ='Latitude: ' + parseFloat(currentRoof.latitude).toFixed(5);
+      document.getElementById(idArea).innerHTML = 'Area: ' + parseInt(currentRoof.area);
 		}
 	}
 
 	function initMap() {
-
+    var currentRoof;
+  
 			for(var i = 0; i < myroofsList.length; i++) {
-				var mapName = 'maps' + i;
-				var id = "investment_" + i;
-				var selectedRoof = document.getElementById(id).value;
-				longitude[i] = myroofsList[i].longitude;
-				latitude[i] = myroofsList[i].latitude;
-				zoomfactor[i] = myroofsList[i].zoomFactor;
-				jsonString[i] = myroofsList[i].roofPolygon;
+        currentRoof = myroofsList[i];
+        
+				var idMap = 'maps' + i;
 
-
-				map[i] = new google.maps.Map(document.getElementById(mapName), {
-			        center: { lat: parseFloat(latitude[i]), lng: parseFloat(longitude[i]) },
-			        zoom: parseInt(zoomfactor[i]),
-			        // only show roadmap type of map, and disable ability to switch to other type
+				map[i] = new google.maps.Map(document.getElementById(idMap), {
+			        center: { lat: parseFloat(currentRoof.latitude), lng: parseFloat(currentRoof.longitude) },
+			        zoom: parseInt(currentRoof.zoomFactor),
 			        mapTypeId: google.maps.MapTypeId.SATELLITE,
 			        mapTypeControl: false,
+              rotateControl: false,
 							panControl: false,
               tilt: 0,
 							streetViewControl: false
@@ -89,35 +67,9 @@
 			        draggable: false
 			    });
 
-			    loadPolygons(i,jsonString[i]);
+			    loadPolygons(i,currentRoof.roofPolygon);
 			}
 
-	}
-
-	function changeMap(s) {
-		var selectedRoof = document.getElementById(s.id).value;
-		var mapIndex = parseInt(s.id.split("_")[1]);
-		var mapName = 'maps' + mapIndex;
-		longitude[mapIndex] = findRoofById(parseInt(selectedRoof)).longitude;
-		latitude[mapIndex] = findRoofById(parseInt(selectedRoof)).latitude;
-		zoomfactor[mapIndex] = findRoofById(parseInt(selectedRoof)).zoomFactor;
-		jsonString[mapIndex] = findRoofById(parseInt(selectedRoof)).roofPolygon;
-
-
-		map[mapIndex] = new google.maps.Map(document.getElementById(mapName), {
-	        center: { lat: parseFloat(latitude[mapIndex]), lng: parseFloat(longitude[mapIndex]) },
-	        zoom: parseInt(zoomfactor[mapIndex]),
-	        // only show roadmap type of map, and disable ability to switch to other type
-	        mapTypeId: google.maps.MapTypeId.SATELLITE,
-	        mapTypeControl: false
-	    });
-		map[mapIndex].data.setStyle({
-	        editable: false,
-	        draggable: false
-	    });
-
-	    loadPolygons(mapIndex,jsonString[mapIndex]);
-	    initAttributes();
 	}
 
 	function loadPolygons(i,jsonString) {
@@ -175,95 +127,49 @@
 
     	function generateRoofHeader(pos) {
     		html = html + '<div class="row row-height">' +
-			'<div class="col-md-12 col-height no-padding">' +
-			'<div class="panel-group"></div>' +
-			'<div class="panel panel-primary">' +
-			'<div class="panel-heading">' +
-			'Roof #' + (pos + 1) +
-			'</div></div></div></div>' + '<div class="row row-height my-investment ">';
+                        '<div class="col-md-12 col-height no-padding">' +
+                          '<div class="panel-group"></div>' +
+                            '<div class="panel panel-primary">' +
+                              '<div class="panel-heading">' +
+                                'Roof #' + (pos + 1) +
+                              '</div>'+
+                            '</div>'+
+                          '</div>'+
+                        '</div>' +
+                        
+                        '<div class="row row-height my-investment ">';
     	}
 
     	function generateColLeftField(pos) {
     		html = html + '<div class="col-md-3 col-height my-investment-left-and-middle-field">' +
-			'<div class="information-field">' +
-			'<div id = "region' + pos + '">Region: Region</div></div>'  +
-			'<div class="information-field">' +
-			'<div id = "longitude' + pos + '">longitude: ' + 'longitude' + '</div></div>' +
-			'<div class="information-field">' +
-			'<div id = "latitude' + pos + '">latitude: ' + 'latitude' + '</div></div>' + '</div>' + '<div class="col-md-3 col-height my-investment-left-and-middle-field">' +
-			'<div class="information-field">' +
-			'area: ' + myroofsList[pos].area + ' m²' + '</div>' + '</div>';
-    	}
+                        '<div class="information-field">' +
+                          '<div id = "region' + pos + '">Region: Region</div>'+
+                        '</div>'  +
+                        '<div class="information-field">' +
+                          '<div id = "longitude' + pos + '">longitude: ' + 'longitude' + '</div>'+
+                        '</div>' +
+                        '<div class="information-field">' +
+                          '<div id = "latitude' + pos + '">latitude: ' + 'latitude' + '</div>'+
+                        '</div>' +
+                      '</div>' + 
+                    
+                      '<div class="col-md-3 col-height my-investment-left-and-middle-field">' +
+                        '<div class="information-field">' + 
+                          '<div id = "area' + pos + '">area: ' + 'area' + ' m²' + '</div>' + 
+                        '</div>' +
+                      '</div>';
+                        }
 
     	function generateMapPerField(pos) {
     		html = html + '<div class="col-md-6 col-height">' +
-			'<div class="my-investment-right-side"><div id="regionselection"><select id="investment_' + pos + '" class="form-control investment_map" onchange="changeMap(this)">';
-			// for(var i = 0; i < investmentsList[pos].valuesOfInvestment.length; i++) {
-			// 	html = html + '<option value="' + investmentsList[pos].valuesOfInvestment[i][0] + '" >' + 'Roof ' + i + '</option>';
-			// }
-			html = html + '<option value="' + '1' + '" >' + 'Roof ' + i + '</option>';
-
-			html = html + '</select></div><div id="maps' + pos + '" class="maps_test"></div></div></div></div>';
+                        '<div class="my-investment-right-side">'+
+                          '<div id="maps' + pos + '" class="maps_test"></div>'+
+                        '</div>'+
+                      '</div>'+
+                    '</div>';
     	}
 
 		</script>
-
-		<!--
-		<div class="row row-height">
-			<div class="col-md-12 col-height no-padding">
-				<div class="panel-group"></div>
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-							Investment #1
-						</div>
-					</div>
-			</div>
-		</div>
-		<div class="row row-height my-investment ">
-			<div class="col-md-3 col-height my-investment-left-and-middle-field">
-					<div class="information-field">
-						Region: southafrica
-					</div>
-					<div class="information-field">
-						Längengrad: 66° 43′ 12″
-					</div>
-					<div class="information-field">
-						Breitengrad: 66° 43′ 12″
-					</div>
-
-			</div>
-			<div class="col-md-3 col-height my-investment-left-and-middle-field">
-					<div class="information-field">
-						space: 1000m²
-					</div>
-					<div class="information-field">
-						magnitude: 50000€
-					</div>
-					<div class="information-field">
-						status: okay
-					</div>
-			</div>
-			<div class="col-md-6 col-height">
-				<div class="my-investment-right-side">
-					<div id="regionselection">
-						<select id="investment#1_map" class="form-control investment_map" onchange="changeMap()">
-							<option value="" selected hidden>Choose region</option>
-							<option value="Hallo">Hallo</option>
-						</select>
-					</div>
-					<div id="maps1" class="maps_test"></div>
-				</div>
-			</div>
-		</div>-->
-
-
-
-
-
-
-
-
-
 
 		<form th:action="@{/logout}" method="get">
 			<button class="btn btn-md btn-danger btn-block" name="registration"

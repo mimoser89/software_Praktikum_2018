@@ -13,6 +13,7 @@ var map;
         mapTypeId: google.maps.MapTypeId.SATELLITE,
         mapTypeControl: false,
         panControl: false,
+        rotateControl: false,
         streetViewControl: false
       });
       map.data.setControls(['Polygon']);
