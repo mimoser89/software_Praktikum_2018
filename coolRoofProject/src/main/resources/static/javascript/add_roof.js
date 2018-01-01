@@ -7,7 +7,7 @@ var map;
           lat: 47.78,
           lng: 13.05
         },
-        zoom: 20,
+        zoom: 16,
         tilt: 0,
         // only show roadmap type of map, and disable ability to switch to other type
         mapTypeId: google.maps.MapTypeId.SATELLITE,
@@ -114,12 +114,10 @@ var map;
         //alert(JSON.stringify(json));
 
         var split = coordinates.toString().split(",");
-        var lati = split[0].substring(1, split[0].length);
-        var longi = split[1].substring(0, split[1].length - 1);
-        
+
         geocodeLatLng(coordinates);
         
-        document.getElementById('longitude').value = split[1].substring(0, split[1].length - 1);
+        document.getElementById('longitude').value = split[1].substring(1, split[1].length-1);
         document.getElementById('latitude').value = split[0].substring(1, split[0].length);
         document.getElementById('zoomFactor').value = map.getZoom();        
       });
@@ -171,9 +169,9 @@ var map;
             polyBnds.extend(path);
             coordinates = path;
           });
-          console.log(bounds);
+          
           var area = google.maps.geometry.spherical.computeArea(bounds);
-          console.log(area);
+ 
           area = Math.round(area);
           areasum += area;
         }
