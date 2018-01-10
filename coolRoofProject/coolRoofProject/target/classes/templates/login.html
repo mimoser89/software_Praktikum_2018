@@ -1,0 +1,105 @@
+<!-- Michael Moser, Martin Schönegger -->
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>Cool Roof Login</title>
+	<!--  INCLUDE CSS -->
+	<link rel="stylesheet" type="text/css" th:href="@{/css/login.css}" />
+	
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  	<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+  	
+  	<!-- INCLUDE "BODY" FONT RALEWAY -->
+	<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+	<!--  INCLUDE FONT ROBOTO  -->
+	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+</head>
+
+<body>
+	<div ng-app="app" ng-controller="home as home"></div>
+	
+	<!-- NAVIGATION -->
+	<nav class="navbar navbar-inverse">
+	  <div class="container-fluid">
+	    <div class="navbar-header">
+	      <button type="button" class="pull-left navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>                        
+	      </button>
+	      <a class="navbar-brand" href="#">CoolRoofs</a>
+	    </div>
+	    <div class="collapse navbar-collapse">
+	      <form th:action="@{/registration}" method="get">
+				<button class="register-button" type="Submit">Register</button>
+		  </form>
+	    </div>
+	  </div>
+	</nav>
+	<div class="container">
+		<div class="row">
+			<form th:action="@{/login}" method="POST">
+				<div class="col-md-12 nomp login-frame">
+					<div class="login-border">
+						<div class="login-heading">Welcome, please login</div>
+						<div class="login-fields">
+							<div class="field-label">Email:</div>
+							<div class="field-input">
+								<input type="text" id="email" name="email" th:placeholder="Email" class="form-control" />
+							</div>
+						</div>
+						<div class="login-fields">
+							<div class="field-label">Password:</div>
+							<div class="field-input">
+								<input type="password"  th:placeholder="Password" id="password" name="password" class="form-control" />
+							</div>
+						</div>
+						<div class="login-fields" style="margin-top:0px!important" th:if="${param.error}">
+							<div class="field-label"></div>
+							<div class="error-login">Email or Password invalid, please verify</div>
+						</div>
+						<div class="login-fields">
+							<div class="field-label"></div>
+							<div class="field-input">
+								<button type="button" class="standard_button" name="Submit" value="Login" type="Submit" th:text="Login"></button>
+							</div>
+						</div>
+						<div class="login-fields" style="margin-top:15px!important;">
+							<a href="/connect/facebook"><div class="facebook-login"></div></a>
+							<a href="/connect/google"><div class="google-login"></div></a>
+						</div>
+					</div>
+				</div>
+			</form>	
+		</div>
+	</div>
+	
+	<form id="pseudoLogout" th:action="@{/logout}" method="get"></form>
+	
+	  
+</body>
+
+<!--  JAVASCRIPT FOR LOGIN -->
+<script type="text/javascript" src="/webjars/angularjs/angular.min.js"></script>
+<script type="text/javascript">
+	angular.module("app", []).controller("home", function($http) {
+		var self = this;
+		$http.get("/user").success(function(data) {
+			self.user = data.userAuthentication.details.name;
+			self.authenticated = false;
+			alert(self.user);
+			document.getElementById("pseudoLogout").submit();
+
+		}).error(function() {
+			self.user = "N/A";
+			self.authenticated = false;
+		});
+	});
+</script>
+
+</html>
