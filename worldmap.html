@@ -1,0 +1,73 @@
+<html>
+<head>
+  
+  <title>Google Maps Multiple Markers</title>
+  <script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
+</head>
+<body>
+  <div id="map" style="height: 512px; width: 1024px;"> 
+</div>
+<script type="text/javascript">
+
+
+
+    var locations = [//zum testen 
+      [-33.890542, 151.274856],
+      [ -33.923036, 151.259052],
+      [ -34.028249, 151.157507],
+      [-33.80010128657071, 151.28747820854187],
+      [ -33.950198, 151.259302],
+      [36.315125,-127.705078],
+      [43.452919,-116.894531],
+      [39.027719,-97.119141],
+      [45.890008,-59.941406],
+      [30.977609,-44.91210],
+      [27.994401,-1.40625],
+      [16.551962,19.599609],
+      [5.441022,32.519531],
+      [5.353521,35.683594],
+      [7.013668,36.035156],
+      [7.100893,31.728516],
+      [5.178482,29.882813],
+      [5.615986,35.332031],
+      [10.141932,47.021484],
+      [7.623887,48.603516],
+      [3.337954,45],
+      [9.275622,36.474609],
+      [5.790897,100.546875],
+      [4.039618,102.041016],
+      [1.845384,103.183594],
+      [0.79099,99.84375],
+      [2.811371,98.525391],
+      [-0.966751,101.337891],
+      [-4.740675,104.150391],
+      [-5.703448,139.833984],
+      [-6.053161,144.316406],
+      [-4.127285,142.470703],
+      [-3.425692,138.427734],
+      [-23.725012,149.326172],
+      [-31.653381,148.623047]
+
+    ];
+
+    var map = new google.maps.Map(document.getElementById('map'), {
+    	center: new google.maps.LatLng(0, 0),
+    	zoom: 2, //zoomlevel 1: 512x512 2: 1024x1024  http://troybrant.net/blog/2010/01/mkmapview-and-zoom-levels-a-visual-guide/ (height halber wert= ohne polarregion)
+    	minZoom: 2,
+    	maxZoom:6, //für Privatssphäre?
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    });
+
+
+    var marker, i;
+
+    for (i = 0; i < locations.length; i++) { 
+      marker = new google.maps.Marker({
+        position: new google.maps.LatLng(locations[i][0], locations[i][1]),// einträge in der db bereits als latLng?
+        map: map
+      });
+    }
+    
+  </script>
+</body>
+</html>
