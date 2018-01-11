@@ -25,6 +25,7 @@ import com.coolroof.service.UserService;
 
 import groovyjarjarcommonscli.ParseException;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -119,6 +120,10 @@ public class InvestorController {
 					
 					// update area left in roof
 					x.setAreaLeft(x.getAreaLeft() - splittedValues[i][1]);
+          
+          // set date when roof is fully invested in (i.e. when it is painted)
+					if (x.getAreaLeft() == 0)
+						x.setTimeOfInvestment(new Timestamp(System.currentTimeMillis()));
 					
 					// calculate magnitude
 					magnitude += x.getPrice() * splittedValues[i][1];

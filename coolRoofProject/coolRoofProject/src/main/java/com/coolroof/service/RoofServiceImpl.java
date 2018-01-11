@@ -15,11 +15,6 @@ public class RoofServiceImpl implements RoofService {
 	private RoofRepository roofRepository;
 
 	@Override
-	public Roof findRoofByAddress(String address) {
-		return roofRepository.findRoofByAddress(address);
-	}
-	
-	@Override
 	public List<Roof> findAllRoofsByUserId(int uId) {
 		return roofRepository.findAllRoofsByUserId(uId);
 	}

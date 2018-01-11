@@ -1,5 +1,6 @@
 package com.coolroof.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -300,7 +301,7 @@ public class RoofController {
 			return modelAndView;
 		}
 
-		modelAndView.addObject("userName", "Welcome " + user.getName() + " " + user.getLastName());
+		modelAndView.addObject("welcome", "Welcome " + user.getName() + " " + user.getLastName());
 		modelAndView.addObject("adminMessage", "Content for Roof Owners");
 		modelAndView.setViewName("admin/roofOwner");
 		return modelAndView;
@@ -311,10 +312,18 @@ public class RoofController {
 		ModelAndView modelAndView = new ModelAndView();
 
 		SecurityContextHolder.getContext().getAuthentication();
-
+    
+		User user = lc.getLoggedInUser();
+		
+		if(!user.getRole().equals("roofOwner")) {
+			modelAndView.setViewName("redirect:/admin/failurePage.html");
+			return modelAndView;
+		}
+    
 		Roof roof = new Roof();
 
 		modelAndView.addObject("roof", roof);
+    modelAndView.addObject("welcome", "Welcome " + user.getName() + " " + user.getLastName());
 		modelAndView.setViewName("admin/addRoof");
 		return modelAndView;
 	}
@@ -343,10 +352,14 @@ public class RoofController {
 			roof.setUserId(user.getId());
 			
 			// looking up continent corresponding to country
-			roof.setRegion(COUNTRY2CONTINENT.get(roof.getRegion()));
+			String continent = COUNTRY2CONTINENT.get(roof.getRegion());
+      if (continent != null)
+				roof.setRegion(continent);
+			else
+				roof.setRegion("other");
 			
-			// TODO add fancy price calculation
-			roof.setPrice(10); 
+      // set price
+			roof.setPrice(calcPrice(roof));
 			
 			// new roof, so areaLeft equals total area
 			roof.setAreaLeft(roof.getArea());
@@ -354,6 +367,7 @@ public class RoofController {
 			roofService.saveRoof(roof);
 			mav.addObject("successMessage", "Roof has been registered successfully");
 			
+      mav.addObject("welcome", "Welcome " + user.getName() + " " + user.getLastName());
 			mav.addObject("roof", new Roof());
 			mav.setViewName("admin/roofSuccess");
 		}
@@ -362,11 +376,20 @@ public class RoofController {
 
 	@RequestMapping(value = "/admin/roofSuccess", method = RequestMethod.GET)
 	public ModelAndView roofSuccess() {
-		ModelAndView modelAndView = new ModelAndView();
+		ModelAndView mav = new ModelAndView();
 
 		SecurityContextHolder.getContext().getAuthentication();
 
-		return modelAndView;
+    User user = lc.getLoggedInUser();
+		
+		if(!user.getRole().equals("roofOwner")) {
+			mav.setViewName("redirect:/admin/failurePage.html");
+			return mav;
+		}
+		
+		mav.addObject("welcome", "Welcome " + user.getName() + " " + user.getLastName());
+    
+		return mav;
 	}
 
 	@RequestMapping(value = "/admin/owner_my_roofs", method = RequestMethod.GET)
@@ -380,12 +403,62 @@ public class RoofController {
 			return modelAndView;
 		}
 
+		// myroofs: all roofs belonging to current user
+		// roofCo2: contains co2 saved for each roof (index corresponding myroofs) (already as formatted String)
 		List<Roof> myroofs = roofService.findAllRoofsByUserId(user.getId());
-
+		List<String> roofCo2 = new ArrayList<>();
+		double totalSaved = 0;
+		double currentSaved;
+		
+		for(Roof r : myroofs) {
+			currentSaved = calcSavedCo2(r);
+			totalSaved += currentSaved;
+			roofCo2.add(String.format("%.2f", currentSaved));
+		}
+			
+		modelAndView.addObject("welcome", "Welcome " + user.getName() + " " + user.getLastName());
+		modelAndView.addObject("roofCo2", roofCo2);
 		modelAndView.addObject("myroofs", myroofs);
+		modelAndView.addObject("co2", "You saved " + String.format("%.2f", totalSaved) + " tons of CO2");
 		modelAndView.setViewName("admin/owner_my_roofs");
 
 		return modelAndView;
 	}
 
+  // TODO dummy calculation; for now simply use a factor depending on continent, material and age
+	private int calcPrice(Roof roof) {
+		int age = roof.getAge();
+		String continent = roof.getRegion();
+		String material = roof.getMaterial();
+		double factor = 1;
+		
+		if (continent != "Asia" && continent != "Africa" && continent != "South America")
+			factor += 0.2;
+		
+		if (material != "Metal")
+			factor += 0.3;
+		
+		if (age <= 10)
+			factor += 0.2;
+		// ....
+		
+		factor *= 10;
+		
+		return (int) factor;	
+	}
+	
+	// TODO	dummy calculation; for now simply 0.1 as some constant co2 factor
+	private double calcSavedCo2(Roof roof) {
+		
+		if(roof.getTimeOfInvestment() == null)
+			return 0;
+		
+		long timeDiff = (System.currentTimeMillis() - roof.getTimeOfInvestment().getTime())/(1000*60*60*24);
+		System.out.println(timeDiff);
+		int usedArea = roof.getArea() - roof.getAreaLeft();
+		double co2Factor = 0.1;
+		
+		return co2Factor * timeDiff * usedArea ;
+	}
+  
 }

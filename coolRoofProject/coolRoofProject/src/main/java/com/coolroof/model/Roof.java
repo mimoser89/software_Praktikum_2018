@@ -1,5 +1,6 @@
 package com.coolroof.model;
 
+import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -21,14 +22,8 @@ public class Roof {
 	@Column(name = "user_id")
 	private int userId;
 
-	@Column(name = "address")
-	private String address;
-
 	@Column(name = "region")
 	private String region;
-
-	@Column(name = "angle")	// TODO unused
-	private int angle;
 
 	@Min(value = 0, message = "*Please select the age of your roof")
 	@Column(name = "age")
@@ -58,6 +53,17 @@ public class Roof {
 	
 	@Column(name = "zoomFactor")
 	private String zoomFactor;
+	
+	@Column(name = "timeOfInvestment")
+	private Timestamp timeOfInvestment;
+
+	public Timestamp getTimeOfInvestment() {
+		return this.timeOfInvestment;
+	}
+	
+	public void setTimeOfInvestment(Timestamp timeOfInvestment) {
+		this.timeOfInvestment = timeOfInvestment;
+	}
 	
 	public String getZoomFactor() {
 		return zoomFactor;
@@ -107,28 +113,12 @@ public class Roof {
 		this.userId = userId;
 	}
 
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
 	public String getRegion() {
 		return region;
 	}
 
 	public void setRegion(String region) {
 		this.region = region;
-	}
-
-	public int getAngle() {
-		return angle;
-	}
-
-	public void setAngle(int angle) {
-		this.angle = angle;
 	}
 
 	public int getAge() {

@@ -5,7 +5,11 @@
   <title>Success - CoolRoofs</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- INCLUDE CSS -->
+  <link rel="stylesheet" type="text/css" th:href="@{/css/home.css}" />
+  <link rel="stylesheet" type="text/css" th:href="@{/css/owner.css}" />
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <!-- INCLUDE SCRIPTS -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
@@ -29,11 +33,16 @@
 	        <li><a href="addRoof.html">Add Roof</a></li>
           <li><a href="owner_my_roofs.html">My Roofs</a></li>
 	      </ul>
+        <form th:action="@{/logout}" method="get">
+					<button class="logout-button" name="logout" type="Submit">Logout</button>
+		  	</form>
+	      <div class="logged-in-user" th:utext= "${welcome}"></div>
 	    </div>
 	  </div>
 	</nav>
 
 <div class="container">
+  <h1> . </h1>
   <h2>Your Roof has been added successfully! Thank you!</h2>
 </div>
 

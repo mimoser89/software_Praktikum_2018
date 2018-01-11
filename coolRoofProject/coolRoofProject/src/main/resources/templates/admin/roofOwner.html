@@ -6,6 +6,7 @@
 <title>RoofOwner Page</title>
 <!-- INCLUDE CSS -->
 <link rel="stylesheet" type="text/css" th:href="@{/css/home.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/owner.css}" />
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <!-- INCLUDE SCRIPTS -->
 <script	src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -29,6 +30,10 @@
 	        <li><a href="addRoof.html">Add Roof</a></li>
 	        <li><a href="owner_my_roofs.html">My Roofs</a></li>
 	      </ul>
+        <form th:action="@{/logout}" method="get">
+					<button class="logout-button" name="logout" type="Submit">Logout</button>
+		  	</form>
+	      <div class="logged-in-user" th:utext= "${welcome}"></div>
 	    </div>
 	  </div>
 	</nav>
@@ -36,7 +41,7 @@
 		<div class="panel-group" style="margin-top:40px">
 			<div class="panel panel-primary">
 				<div class="panel-heading">
-					<span th:utext="${userName}"></span>
+					<span th:utext="${welcome}"></span>
 				</div>
 				<p class="admin-message-text text-center" style="margin-top:20px" th:utext="${adminMessage}"></p>
 				<div class="content-investor" style="padding:20px">
