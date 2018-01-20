@@ -1,0 +1,104 @@
+
+/*no margin no padding*/
+.nomp	{ padding:0!important; margin:0!important; }
+.no-padding {padding-left: 0!important; padding-right: 0!important;}
+
+/*same row height trick*/
+@media (min-width: 992px) {
+	.row-height{display:-webkit-box; display:-webkit-flex; display: -ms-flexbox; display:flex;}
+	.col-height{display:flex; flex-direction:column;}
+}
+
+.select-buttons { padding: 3px 3px 3px 3px; }
+
+.remove-roofes { margin-left: 15px; }
+
+.roof-details { margin-left: 35px; }
+
+.more-height {padding-top: 20px!important; padding-bottom: 20px!important;}
+
+select {
+ width: 100%
+}
+
+.button-addroof {
+   background-color: #337ab7; /* Green */
+   width: 100%!important;
+   padding-top: 5px; padding-bottom: 5px;
+   border: none;
+   color: white;
+   text-align: center;
+   text-decoration: none;
+   display: inline-block;
+   font-size: 16px;
+   border-radius: 9px;
+}
+
+.logged-in-user {float: right; width: 400px!important; margin-right: 20px; padding-top: 15px!important; padding-bottom: 15px!important; color:white; text-align: right!important;  }
+
+.logout-button {float: right; width: 100px!important; margin-top: 10px!important; padding-top: 5px!important; padding-bottom: 5px!important; text-align: center; border: none; color: white; font-size: 14px; 
+   border-radius: 3px;
+   background-color: #423b3b; }
+
+.extra-padding { padding: 20px; }
+
+.add-roof { position: relative;  padding: 10px; }
+
+.add-roof-side { position: relative; display:inline-block;  padding: 11px; }
+
+ #mapsX {
+	height: 350px;
+	background-image: url(/images/maps.jpg);
+	border-radius:13px;
+	border: 1px solid black;
+	background-size: cover;
+} 
+
+.maps_test {height: 350px;
+	background-size: cover;
+	border: 1px solid green;
+}
+
+.button-previous {
+   background-color: #337ab7 ; /* Green */
+   width: 100%!important;
+   padding-top: 5px; padding-bottom: 5px;
+   border: none;
+   color: white;
+   text-align: center;
+   text-decoration: none;
+   display: inline-block;
+   font-size: 16px;
+   border-radius: 9px;
+}
+
+.btn-block {margin-top: 30px;background-color: #337ab7!important; border:none!important;}
+
+.my-investment {border: 1px solid #337ab7; margin-bottom: 50px;}
+
+.my-investment-user {position: relative; font-size: 24px; color: black; margin-bottom: 10px;}
+
+.my-investment-left-and-middle-field {display:inline-block!important; padding-left: 20px; padding-right: 20px; padding-top: 5vw; border-right: 1px solid #337ab7;  }
+
+.information-field {position: relative; height:3vw; font-size: 20px; margin-bottom: 2vw;  }
+
+.padding-test {display:inline-block; }
+
+.bordershow {border: 1px solid black;}
+
+.roof_map { margin-bottom: 20px; }
+
+}
+
+ #panel {
+    float: left;
+    width: 35%;
+    height: 100%;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    outline: 1px solid rgba(0,0,0,0.2);
+    z-index: 100;
+}
+#controls {
+    padding-bottom: 8px;
+}
+
