@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<title>My Roofs</title>
+<!-- INCLUDE CSS -->
+<link rel="stylesheet" type="text/css" th:href="@{/css/home.css}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/owner.css}" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<!-- INCLUDE SCRIPTS -->
+<script	src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-latest.js"></script>
+</head>
+
+<script th:inline="javascript">
+
+var myroofsList = [[${myroofs}]];
+  var co2list = [[${roofCo2}]];
+	var html = "";
+
+	var map = new Array(myroofsList.length);
+
+	window.onload = function () {
+		initMap();
+		initAttributes();
+	}
+
+	function initAttributes() {
+    var currentRoof;
+    var currentCo2;
+
+		for(var i = 0; i < myroofsList.length; i++) {
+      currentRoof = myroofsList[i];
+      currentCo2 = co2list[i];
+
+			var idRegion = "region" + i;
+			var idLongitude = "longitude" + i;
+			var idLatitude = "latitude" + i;
+      		var idArea = "area" + i;
+      		var idCo2 = "co2" + i;
+
+			document.getElementById(idRegion).innerHTML = 'Region: ' + currentRoof.region;
+			document.getElementById(idLongitude).innerHTML= 'Longitude: ' + parseFloat(currentRoof.longitude).toFixed(5);
+			document.getElementById(idLatitude).innerHTML ='Latitude: ' + parseFloat(currentRoof.latitude).toFixed(5);
+      		document.getElementById(idArea).innerHTML = 'Area: ' + parseInt(currentRoof.area) + '  m²';
+      		document.getElementById(idCo2).innerHTML = 'Co2 saved: ' + currentCo2 + ' tons';
+		}
+	}
+
+	function initMap() {
+    var currentRoof;
+
+			for(var i = 0; i < myroofsList.length; i++) {
+        currentRoof = myroofsList[i];
+
+				var idMap = 'maps' + i;
+
+				map[i] = new google.maps.Map(document.getElementById(idMap), {
+			        center: { lat: parseFloat(currentRoof.latitude), lng: parseFloat(currentRoof.longitude) },
+			        zoom: parseInt(currentRoof.zoomFactor),
+			        mapTypeId: google.maps.MapTypeId.SATELLITE,
+			        mapTypeControl: false,
+              rotateControl: false,
+							panControl: false,
+              tilt: 0,
+							streetViewControl: false
+			    });
+				map[i].data.setStyle({
+			        editable: false,
+			        draggable: false
+			    });
+
+			    loadPolygons(i,currentRoof.roofPolygon);
+			}
+
+	}
+
+	function loadPolygons(i,jsonString) {
+		var data = JSON.parse(jsonString);
+		map[i].data.addGeoJson(data)
+	}
+
+</script>
+<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBGBWhUOkEthohFqecddY4RWSysZtVcIRo&libraries=drawing,geometry">
+</script>
+
+<body>
+	  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="pull-left navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        <a class="navbar-brand" href="/">CoolRoofs</a>
+      </div>
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav">
+          <li><a href="addRoof.html">Add Roof</a></li>
+          <li class="active"><a href="owner_my_roofs.html">My Roofs</a></li>
+        </ul>
+        <form th:action="@{/logout}" method="get">
+					<button class="logout-button" name="logout" type="Submit">Logout</button>
+		  	</form>
+	      <div class="logged-in-user" th:utext= "${welcome}"></div>
+      </div>
+    </div>
+  </nav>
+
+	<div class="container">
+		<!-- my roof -->
+    <h1> . </h1>
+
+
+		<div class="row row-height">
+			<div class="col-md-12 col-height nomp">
+				<div class="savedCO2">
+          <h2 th:utext = "${co2}"></h2>
+        </div>
+			</div>
+		</div>
+
+		<script th:inline="javascript">
+
+
+    	for (var i = 0; i < myroofsList.length; i++) {
+    		generateRoofHeader(i);
+    		generateColLeftField(i);
+    		generateMapPerField(i);
+    	}
+
+    	document.write(html);
+
+    	function generateRoofHeader(pos) {
+    		html = html + '<div class="row row-height">' +
+                        '<div class="col-md-12 col-height no-padding">' +
+                          '<div class="panel-group"></div>' +
+                            '<div class="panel panel-primary">' +
+                              '<div class="panel-heading">' +
+                                'Roof #' + (pos + 1) +
+                              '</div>'+
+                            '</div>'+
+                          '</div>'+
+                        '</div>' +
+
+                        '<div class="row row-height my-roof ">';
+    	}
+
+    	function generateColLeftField(pos) {
+    		html = html + '<div class="col-md-3 col-height my-roof-left-and-middle-field">' +
+                        '<div class="information-field">' +
+                          '<div id = "region' + pos + '">Region: Region</div>'+
+                        '</div>'  +
+                        '<div class="information-field">' +
+                          '<div id = "longitude' + pos + '">longitude: ' + 'longitude' + '</div>'+
+                        '</div>' +
+                        '<div class="information-field">' +
+                          '<div id = "latitude' + pos + '">latitude: ' + 'latitude' + '</div>'+
+                        '</div>' +
+                      '</div>' +
+
+                      '<div class="col-md-3 col-height my-roof-left-and-middle-field">' +
+                        '<div class="information-field">' +
+                          '<div id = "area' + pos + '">area: ' + 'area' + '</div>' +
+                        '</div>' +
+                        '<div class="information-field">' +
+                          '<div id = "co2' + pos + '">co2: ' + 'co2' + '</div>' +
+                        '</div>' +
+                      '</div>';
+                        }
+
+    	function generateMapPerField(pos) {
+    		html = html + '<div class="col-md-6 col-height">' +
+                        '<div class="my-roof-right-side">'+
+                          '<div id="maps' + pos + '" class="maps_multiple_roofs"></div>'+
+                        '</div>'+
+                      '</div>'+
+                    '</div>';
+    	}
+
+		</script>
+
+		<form th:action="@{/logout}" method="get">
+			<button class="btn btn-md btn-danger btn-block" name="registration"
+				type="Submit">Logout</button>
+		</form>
+	</div>
+</body>
+</html>
