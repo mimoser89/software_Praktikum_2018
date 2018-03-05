@@ -13,6 +13,7 @@
 \usepackage[ngerman]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{listings}
 %\textheight 680pt
 %\textwidth 460pt
 %\topmargin -40pt
@@ -459,8 +460,98 @@ Für das CoolRoof Projekt brauchen wir Javascript hauptsächlich für die Google
 
 Google Maps Javascript Function
 
+\section{Google Maps}
+Google Maps ist ein Online-Kartendienst des US-amerikanischen Unternehmens Google LLC. Die Erdoberfläche kann als Straßenkarte oder als Luft- oder Satellitenbild betrachtet werden, wobei auch Standorte von Institutionen oder bekannten Objekten angezeigt werden. Der Dienst wurde am 8. Februar 2005 gestartet. \\
+
+In diesem Projekt wurde Google Maps (genauer: die Google Maps JavaScript API V3) benutzt um auf dessen Kartenmaterial zuzugreifen, um den Benutzern zu ermöglichen Häuser zu finden und dessen Dächer zu markieren. Bereits markierte Dächer werden an anderer Stelle wieder auf einer Karte eingezeichnet. Des Weiteren wurden für diverse Berechnungen und dem Auslesen von Informationen Google Maps benutzt.\\
 
 
+Zum Laden der Google Maps JavaScript API verwendet man ein Tag script wie im folgendem Beispiel:
+\pagebreak
+    \begin{lstlisting}[basicstyle=\ttfamily,
+  columns=fullflexible,
+  frame=single,
+  breaklines=true,
+  postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}]
+<script async defer 
+    src="https://maps.googleapis.com/maps/
+    api/js?key=YOUR_API_KEY&callback=initMap">
+    </script>
+\end{lstlisting}
+\bigskip
+\bigskip
+
+Die im Tag script enthaltene URL bezeichnet den Speicherort einer JavaScript-Datei, mit der sämtliche Symbole und Definitionen geladen werden, die man zur Verwendung der Maps JavaScript API benötigen. Das Attribut async ermöglicht die Wiedergabe der restlichen Website im Browser, während die Maps JavaScript API geladen wird. Sobald der Ladevorgang der API abgeschlossen ist, wird die angegebene Funktion mithilfe des Parameters callback durch die API aufgerufen. Der Parameter key enthält den API-Schlüssel der Anwendung. Einen Schlüssel erhält man mit einem Google Konto in der GoogleAPIConsole, ein gewisses Kontingent an Anfragen an die API ist frei.\\
+
+Beim Laden der Maps JavaScript API über die URL können bei Bedarf weitere Bibliotheken mithilfe des URL-Parameters libraries geladen werden. Bibliotheken sind Codemodule, die zusätzliche Funktionen für die zentrale Maps JavaScript API bieten, aber nur auf explizite Anforderung geladen werden.
+Beispiele für die Verwendung einer solchen Library aus unserem Projekt.
+\begin{itemize}
+	\item \texttt{geometry}, für die Flächenberechnung der Hausdächer.
+	\item \texttt{places} um nach Orten zu suchen, hier, um ein Haus mittels eingegeben Adresse zu finden.
+	\item \texttt{drawing} bietet eine grafische Benutzeroberfläche zum Zeichnen von Polygonen, Rechtecken, Polylinien, Kreisen und Markern auf der Karte. 
+
+\end{itemize}
+
+Zugegriffen wird auf die Libraries innerhalb einer oder mehrere JavascriptFunktionen, folgend befindet sich ein Ausschnitt aus dem Projektcode der für die Flächenberechnung der Dächer zuständig ist :
+\begin{lstlisting}[ basicstyle=\ttfamily,
+  columns=fullflexible,
+  frame=single,
+  breaklines=true,
+  postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}]
+function calcar() {
+      var areasum = 0;
+      //         var area = google.maps.geometry.spherical.computeArea(selectedShape.getPath());
+      //         document.getElementById("test3").innerHTML = "Area =" + area.toFixed(2);
+      map.data.forEach(function(feature) {
+        if (feature.getGeometry().getType() == "Polygon") {
+          var bounds = [];
+          var polyBnds = new google.maps.LatLngBounds();
+
+          feature.getGeometry().forEachLatLng(function(path) {
+            bounds.push(path);
+
+            latlngforDB = path;
+
+            polyBnds.extend(path);
+            coordinates = path;
+          });
+          
+          var area = google.maps.geometry.spherical.computeArea(bounds);
+ 
+          area = Math.round(area);
+          areasum += area;
+        }
+
+      });
+      document.getElementById('area').value = areasum;
+      setProperties();
+
+    }
+\end{lstlisting}
+ Ein 'feature' auf der Map ist jedes eingezeichnete Objekt(Polygon,Kreis,Punkt...). Für jedes Polygon, dass so gefunden wurde, wird nun für jedes seiner verbundenen Koordinatenpaare ein Pfad erstellt. Zusammen bilden diese Pfade ein 'bound', von diesen Bounds kann mit einem Zugriff auf die geometry Bibliothek von Google Maps eine Fläche berechnet werden.\\
+ 
+Die komplette Google Maps JavaScript API V3 Reference findet sich unter
+https://developers.google.com/maps/documentation/javascript/reference?hl=de \\
+
+\subsection{GeoJson}
+Um eingezeichnete Formen auf der Karte, in einer Datenbank abzuspeichern um sie später wieder einzeichnen können, werden die Daten im GeoJson Format gespeichert. GeoJSON ist ein offenes Format um geografische Daten nach der Simple-Feature-Access-Spezifikation zu repräsentieren. Dafür wird die JavaScript Object Notation(JSON) verwendet.\\
+
+Folgend ein Beispiel eines Eintrags, bestehend aus zwei Polygonen (zwei verschiedene Dächer, z.b. Wohnhaus und Garage). 
+
+    \begin{lstlisting}[ basicstyle=\ttfamily,
+  columns=fullflexible,
+  frame=single,
+  breaklines=true,
+  postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}]
+{"type":"FeatureCollection",
+	"features":[{"type":"Feature",
+		"geometry":{"type":"Polygon","coordinates":[[[132.626953125,-11.09216589350199], [113.203125,-22.67484735118852], [116.89453125,-35.02999636902566], [132.36328125,-31.728167146023935], [144.4921875,-38.61687046392973], [149.677734375,-37.02009820136811], [153.28125,-26.82407078047018], [142.20703125,-11.350796722383672], [140.44921875,-17.476432197195518], [132.626953125,-11.09216589350199]]]},
+        
+"properties":{}},
+		{"type":"Feature",
+		"geometry":{"type":"Polygon","coordinates":[[[144.404296875,-41.11246878918085], [146.513671875,-43.96119063892024], [148.271484375,-40.6473035625225], [144.404296875,-41.11246878918085]]]},
+"properties":{}}]}
+\end{lstlisting}
 
 
 
